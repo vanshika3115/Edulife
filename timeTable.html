@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edulife Companion - Timetable</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --primary-light: #1a4d80;
+            --accent-color: #ff9900;
+            --light-bg: #f5f8fa;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --border-color: #dbe0e4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .timetable-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .timetable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .timetable-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--text-dark);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #e68a00;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f2f2f2;
+        }
+
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .timetable th,
+        .timetable td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .timetable th {
+            background-color: var(--primary-light);
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .timetable td {
+            height: 100px;
+            vertical-align: top;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .timetable td:hover {
+            background-color: #f0f5ff;
+        }
+
+        .time-slot {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .class-card {
+            background-color: rgba(0, 51, 102, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 8px;
+            margin-bottom: 5px;
+            text-align: left;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .class-card:hover {
+            background-color: rgba(0, 51, 102, 0.15);
+        }
+
+        .class-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .class-details {
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            padding: 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .color-option {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-option.selected {
+            border-color: #333;
+        }
+
+        .color-preview {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1001;
+            animation: fadeInOut 3s ease;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .timetable-container {
+                overflow-x: auto;
+            }
+            
+            .timetable th, 
+            .timetable td {
+                padding: 8px 5px;
+                font-size: 0.85rem;
+            }
+            
+            .class-card {
+                padding: 5px;
+            }
+            
+            .timetable td {
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span> Edulife Companion</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="timetable-container">
+            <div class="timetable-header">
+                <div class="timetable-title">My Weekly Timetable</div>
+                <div class="controls">
+                    <button id="clear-btn" class="btn-secondary">Clear All</button>
+                    <button id="add-class-btn" class="btn-primary">Add Class</button>
+                </div>
+            </div>
+            
+            <div id="timetable-wrapper">
+                <table class="timetable" id="timetable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Monday</th>
+                            <th>Tuesday</th>
+                            <th>Wednesday</th>
+                            <th>Thursday</th>
+                            <th>Friday</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetable-body">
+                        <!-- Time slots from 8:00 to 18:00 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Class Modal -->
+    <div id="class-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Add New Class</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="class-form" onsubmit="return false;">
+                    <div class="form-group">
+                        <label for="class-title">Class Title</label>
+                        <input type="text" id="class-title" placeholder="e.g., Mathematics" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="class-day">Day</label>
+                        <select id="class-day" required>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="class-time">Time Slot</label>
+                        <select id="class-time" required>
+                            <!-- Options will be added by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="class-location">Location</label>
+                        <input type="text" id="class-location" placeholder="e.g., Room 301">
+                    </div>
+                    <div class="form-group">
+                        <label for="class-professor">Professor</label>
+                        <input type="text" id="class-professor" placeholder="e.g., Dr. Smith">
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <div id="color-options">
+                            <span class="color-option selected" style="background-color: #003366;" data-color="#003366"></span>
+                            <span class="color-option" style="background-color: #4CAF50;" data-color="#4CAF50"></span>
+                            <span class="color-option" style="background-color: #F44336;" data-color="#F44336"></span>
+                            <span class="color-option" style="background-color: #FF9800;" data-color="#FF9800"></span>
+                            <span class="color-option" style="background-color: #9C27B0;" data-color="#9C27B0"></span>
+                            <span class="color-option" style="background-color: #00BCD4;" data-color="#00BCD4"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="class-notes">Notes</label>
+                        <textarea id="class-notes" rows="3" placeholder="Any additional information"></textarea>
+                    </div>
+                    <input type="hidden" id="class-id">
+                    <div class="form-group" style="margin-top: 20px; text-align: center;">
+                        <button type="button" id="form-add-btn" class="btn-primary" style="background-color: #ff9900; color: #000; font-weight: bold; padding: 12px 30px; font-size: 16px; width: 100%; margin-top: 10px;">ADD TO TIMETABLE</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="delete-btn" class="delete-btn" style="display: none;">Delete</button>
+                <button id="cancel-btn" class="btn-secondary">Cancel</button>
+                <button id="save-btn" class="btn-primary" style="background-color: #ff9900; color: #000; font-weight: bold; padding: 12px 24px; font-size: 16px;">SAVE CLASS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            const timetableBody = document.getElementById('timetable-body');
+            const classModal = document.getElementById('class-modal');
+            const classForm = document.getElementById('class-form');
+            const modalTitle = document.getElementById('modal-title');
+            const addClassBtn = document.getElementById('add-class-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const deleteBtn = document.getElementById('delete-btn');
+            const closeBtn = document.querySelector('.close-btn');
+            const classTimeSelect = document.getElementById('class-time');
+            const colorOptions = document.querySelectorAll('.color-option');
+            const toast = document.getElementById('toast');
+            
+            let classes = JSON.parse(localStorage.getItem('edulifeTimetable')) || [];
+            let selectedColor = '#003366';
+            let editingClassId = null;
+
+            // Time slots for the timetable
+            const timeSlots = [
+                '8:00 - 9:00',
+                '9:00 - 10:00',
+                '10:00 - 11:00',
+                '11:00 - 12:00',
+                '12:00 - 13:00',
+                '13:00 - 14:00',
+                '14:00 - 15:00',
+                '15:00 - 16:00',
+                '16:00 - 17:00',
+                '17:00 - 18:00'
+            ];
+
+            // Days of the week for the timetable
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+            // Initialize the timetable
+            function initializeTimetable() {
+                // Clear existing rows
+                timetableBody.innerHTML = '';
+                
+                // Create rows for each time slot
+                timeSlots.forEach((timeSlot, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Create time column
+                    const timeCell = document.createElement('td');
+                    timeCell.classList.add('time-slot');
+                    timeCell.textContent = timeSlot;
+                    row.appendChild(timeCell);
+                    
+                    // Create cells for each day
+                    days.forEach(day => {
+                        const cell = document.createElement('td');
+                        cell.dataset.day = day;
+                        cell.dataset.time = timeSlot;
+                        cell.dataset.index = index;
+                        
+                        // Add double-click event listener to add class
+                        cell.addEventListener('dblclick', () => {
+                            openAddClassModal(day, timeSlot);
+                        });
+                        
+                        row.appendChild(cell);
+                    });
+                    
+                    timetableBody.appendChild(row);
+                });
+                
+                // Populate time slot options in the modal
+                populateTimeOptions();
+                
+                // Load and display saved classes
+                loadClasses();
+            }
+
+            // Populate the time slot options in the modal
+            function populateTimeOptions() {
+                classTimeSelect.innerHTML = '';
+                timeSlots.forEach(slot => {
+                    const option = document.createElement('option');
+                    option.value = slot;
+                    option.textContent = slot;
+                    classTimeSelect.appendChild(option);
+                });
+            }
+
+            // Load classes from local storage and display them
+            function loadClasses() {
+                // Clear all cells first
+                clearCells();
+                
+                // Display each class
+                classes.forEach(classItem => {
+                    displayClass(classItem);
+                });
+                
+                // Save to local storage
+                saveToLocalStorage();
+            }
+
+            // Clear all cell contents
+            function clearCells() {
+                const cells = document.querySelectorAll('#timetable-body td:not(.time-slot)');
+                cells.forEach(cell => {
+                    cell.innerHTML = '';
+                });
+            }
+
+            // Display a class in the timetable
+            function displayClass(classItem) {
+                try {
+                    // First convert day and time to proper format in case of any inconsistency
+                    const day = classItem.day;
+                    const time = classItem.time;
+                    
+                    // Debug log
+                    console.log("Displaying class:", classItem);
+                    console.log(`Looking for cell with day=${day} and time=${time}`);
+                    
+                    // Find the corresponding cell - using a different approach
+                    const allCells = document.querySelectorAll('#timetable-body td');
+                    let targetCell = null;
+                    
+                    allCells.forEach(cell => {
+                        if (cell.dataset.day === day && cell.dataset.time === time) {
+                            targetCell = cell;
+                            console.log("Found matching cell:", cell);
+                        }
+                    });
+                    
+                    if (targetCell) {
+                        const classCard = document.createElement('div');
+                        classCard.classList.add('class-card');
+                        classCard.dataset.id = classItem.id;
+                        classCard.style.borderLeftColor = classItem.color || '#003366';
+                        classCard.style.backgroundColor = `${classItem.color}15` || 'rgba(0, 51, 102, 0.1)';
+                        
+                        classCard.innerHTML = `
+                            <div class="class-title">${classItem.title}</div>
+                            <div class="class-details">${classItem.location || ''}</div>
+                            <div class="class-details">${classItem.professor ? 'Prof. ' + classItem.professor : ''}</div>
+                        `;
+                        
+                        // Add click event to edit the class
+                        classCard.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            openEditClassModal(classItem.id);
+                        });
+                        
+                        targetCell.appendChild(classCard);
+                        console.log("Class card added to cell");
+                    } else {
+                        console.error(`Could not find cell for day=${day} and time=${time}`);
+                        // Try creating an alert to show the issue
+                        showToast(`Error: Could not place class "${classItem.title}" on ${day} at ${time}`);
+                    }
+                } catch (error) {
+                    console.error("Error displaying class:", error);
+                    showToast("Error displaying class. Please try again.");
+                }
+            }
+
+            // Open the modal to add a new class
+            function openAddClassModal(day = 'Monday', time = timeSlots[0]) {
+                modalTitle.textContent = 'Add New Class';
+                document.getElementById('class-title').value = '';
+                document.getElementById('class-day').value = day;
+                document.getElementById('class-time').value = time;
+                document.getElementById('class-location').value = '';
+                document.getElementById('class-professor').value = '';
+                document.getElementById('class-notes').value = '';
+                document.getElementById('class-id').value = '';
+                
+                // Reset selected color
+                updateSelectedColor('#003366');
+                
+                // Hide delete button for new classes
+                deleteBtn.style.display = 'none';
+                
+                // Show the modal
+                classModal.style.display = 'flex';
+                
+                // Set focus on the title input
+                setTimeout(() => {
+                    document.getElementById('class-title').focus();
+                }, 100);
+                
+                editingClassId = null;
+            }
+
+            // Open the modal to edit an existing class
+            function openEditClassModal(classId) {
+                const classItem = classes.find(c => c.id === classId);
+                
+                if (classItem) {
+                    modalTitle.textContent = 'Edit Class';
+                    document.getElementById('class-title').value = classItem.title;
+                    document.getElementById('class-day').value = classItem.day;
+                    document.getElementById('class-time').value = classItem.time;
+                    document.getElementById('class-location').value = classItem.location || '';
+                    document.getElementById('class-professor').value = classItem.professor || '';
+                    document.getElementById('class-notes').value = classItem.notes || '';
+                    document.getElementById('class-id').value = classItem.id;
+                    
+                    // Set selected color
+                    updateSelectedColor(classItem.color || '#003366');
+                    
+                    // Show delete button for existing classes
+                    deleteBtn.style.display = 'block';
+                    
+                    // Show the modal
+                    classModal.style.display = 'flex';
+                    
+                    // Set focus on the title input
+                    setTimeout(() => {
+                        document.getElementById('class-title').focus();
+                    }, 100);
+                    
+                    editingClassId = classId;
+                }
+            }
+
+            // Close the modal
+            function closeModal() {
+                classModal.style.display = 'none';
+            }
+
+            // Save a class
+            function saveClass(e) {
+                // Prevent default form submission
+                if (e) e.preventDefault();
+                
+                const title = document.getElementById('class-title').value.trim();
+                const day = document.getElementById('class-day').value;
+                const time = document.getElementById('class-time').value;
+                const location = document.getElementById('class-location').value.trim();
+                const professor = document.getElementById('class-professor').value.trim();
+                const notes = document.getElementById('class-notes').value.trim();
+                
+                if (!title) {
+                    alert('Please enter a class title');
+                    return;
+                }
+                
+                // Check if editing an existing class or adding a new one
+                if (editingClassId) {
+                    // Update existing class
+                    const index = classes.findIndex(c => c.id === editingClassId);
+                    if (index !== -1) {
+                        classes[index] = {
+                            ...classes[index],
+                            title,
+                            day,
+                            time,
+                            location,
+                            professor,
+                            notes,
+                            color: selectedColor
+                        };
+                    }
+                    showToast('Class updated successfully!');
+                } else {
+                    // Add new class
+                    const newClass = {
+                        id: generateId(),
+                        title,
+                        day,
+                        time,
+                        location,
+                        professor,
+                        notes,
+                        color: selectedColor
+                    };
+                    
+                    classes.push(newClass);
+                    showToast('Class added successfully!');
+                }
+                
+                // Log the class being added (for debugging)
+                console.log("Classes after save:", classes);
+                
+                // Save and reload classes
+                saveToLocalStorage();
+                loadClasses();
+                
+                // Close the modal
+                closeModal();
+            }
+
+            // Delete a class
+            function deleteClass() {
+                if (editingClassId) {
+                    if (confirm('Are you sure you want to delete this class?')) {
+                        classes = classes.filter(c => c.id !== editingClassId);
+                        saveToLocalStorage();
+                        loadClasses();
+                        closeModal();
+                        showToast('Class deleted successfully!');
+                    }
+                }
+            }
+
+            // Clear all classes
+            function clearAllClasses() {
+                if (confirm('Are you sure you want to clear all classes? This cannot be undone.')) {
+                    classes = [];
+                    saveToLocalStorage();
+                    loadClasses();
+                    showToast('All classes cleared successfully!');
+                }
+            }
+
+            // Save classes to local storage
+            function saveToLocalStorage() {
+                localStorage.setItem('edulifeTimetable', JSON.stringify(classes));
+            }
+
+            // Generate a unique ID
+            function generateId() {
+                return '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            // Update the selected color
+            function updateSelectedColor(color) {
+                selectedColor = color;
+                colorOptions.forEach(option => {
+                    if (option.dataset.color === color) {
+                        option.classList.add('selected');
+                    } else {
+                        option.classList.remove('selected');
+                    }
+                });
+            }
+
+            // Show toast notification
+            function showToast(message) {
+                toast.textContent = message;
+                toast.style.display = 'block';
+                
+                // Add error class if it's an error message
+                if (message.toLowerCase().includes('error')) {
+                    toast.style.backgroundColor = '#F44336';
+                } else {
+                    toast.style.backgroundColor = '#4CAF50';
+                }
+                
+                // Hide after 3 seconds
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 3000);
+            }
+
+            // Event Listeners
+            addClassBtn.addEventListener('click', () => openAddClassModal());
+            saveBtn.addEventListener('click', saveClass);
+            document.getElementById('form-add-btn').addEventListener('click', saveClass);
+            classForm.addEventListener('submit', saveClass); // Add form submission handler
+            cancelBtn.addEventListener('click', closeModal);
+            deleteBtn.addEventListener('click', deleteClass);
+            closeBtn.addEventListener('click', closeModal);
+            clearBtn.addEventListener('click', clearAllClasses);
+            
+            // Color option selection
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const color = option.dataset.color;
+                    updateSelectedColor(color);
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === classModal) {
+                    closeModal();
+                }
+            });
+            
+            // Initialize the timetable
+            initializeTimetable();
+        });
+    </script>
+</body>
+</html>

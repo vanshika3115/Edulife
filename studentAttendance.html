@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Attendance Tracker - EduLife</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <style>
+    :root {
+      --primary: #003366;
+      --primary-light: #004080;
+      --primary-dark: #00264d;
+      --accent: #ff6f61;
+      --background: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+      font-family: 'Poppins', sans-serif; 
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--background) 0%, #e6f0ff 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 51, 102, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 51, 102, 0.05) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    .tracker-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 10px 30px rgba(0, 51, 102, 0.1);
+      position: relative;
+      border: 1px solid rgba(0, 51, 102, 0.1);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .header-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 { 
+      text-align: center; 
+      color: var(--primary);
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+    }
+
+    h2 i {
+      color: var(--primary);
+    }
+
+    .subject-list {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .subject-list input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      font-size: 1rem;
+    }
+
+    .subject-list input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+    }
+
+    .subject-list button {
+      padding: 0.75rem 1rem;
+      background: var(--primary);
+      border: none;
+      color: white;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      width: 100%;
+      transition: var(--transition);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .subject-list button:hover { 
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .attendance-list {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .attendance-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--background);
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      transition: var(--transition);
+      border: 1px solid rgba(0, 51, 102, 0.1);
+    }
+
+    .attendance-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .attendance-item span { 
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .attendance-item button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: var(--primary);
+      border-radius: var(--border-radius);
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .attendance-item button:hover { 
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .attendance-section {
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+
+    .chart-container {
+      margin-top: 1.5rem;
+      background: var(--background);
+      border-radius: var(--border-radius);
+      padding: 1rem;
+      height: 300px;
+      border: 1px solid rgba(0, 51, 102, 0.1);
+      overflow: visible;
+    }
+
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .reset-button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      width: 100%;
+      margin-top: 1.5rem;
+    }
+
+    .reset-button:hover { 
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .section-title {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .attendance-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--background);
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      text-align: center;
+      border: 1px solid rgba(0, 51, 102, 0.1);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    @media (max-width: 480px) {
+      .tracker-container {
+        padding: 1.5rem;
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+      }
+
+      .attendance-section {
+        max-height: 50vh;
+      }
+
+      .attendance-item {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .attendance-item button {
+        width: 100%;
+      }
+
+      .chart-container {
+        margin: 1rem -0.5rem;
+        border-radius: 0;
+        padding: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="tracker-container">
+    <div class="header-container">
+      <h2><i class="fas fa-calendar-check"></i> Student Attendance Tracker</h2>
+    </div>
+
+    <div id="subjectSection">
+      <p class="section-title"><i class="fas fa-book"></i> Enter your subjects (set once):</p>
+      <div class="subject-list" id="subjectInputs">
+        <input type="text" placeholder="Subject Name" id="subjectName">
+        <button onclick="addSubject()">
+          <i class="fas fa-plus"></i>
+          Add Subject
+        </button>
+        <button onclick="finalizeSubjects()">
+          <i class="fas fa-check"></i>
+          Confirm Subjects
+        </button>
+      </div>
+    </div>
+
+    <div id="attendanceSection" style="display:none;" class="attendance-section">
+      <p class="section-title"><i class="fas fa-clipboard-list"></i> Mark Attendance:</p>
+      <div class="attendance-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="totalSubjects">0</div>
+          <div class="stat-label">Total Subjects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="averageAttendance">0%</div>
+          <div class="stat-label">Average Attendance</div>
+        </div>
+      </div>
+      <div class="attendance-list" id="attendanceButtons"></div>
+      <div class="chart-container">
+        <canvas id="attendanceChart"></canvas>
+      </div>
+    </div>
+
+    <button class="reset-button" onclick="resetTracker()">
+      <i class="fas fa-redo-alt"></i>
+      Reset All Data
+    </button>
+  </div>
+
+  <script>
+    let subjects = JSON.parse(localStorage.getItem('subjects')) || [];
+    let attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+    const subjectSection = document.getElementById('subjectSection');
+    const attendanceSection = document.getElementById('attendanceSection');
+    const attendanceButtons = document.getElementById('attendanceButtons');
+    let chart;
+
+    if (subjects.length > 0) showAttendanceSection();
+
+    function addSubject() {
+      const name = document.getElementById('subjectName').value.trim();
+      if (name && !subjects.includes(name)) {
+        subjects.push(name);
+        document.getElementById('subjectName').value = '';
+        alert(`Added: ${name}`);
+      } else {
+        alert('Subject already added or invalid!');
+      }
+    }
+
+    function finalizeSubjects() {
+      if (subjects.length === 0) {
+        alert('Please add at least one subject!');
+        return;
+      }
+      localStorage.setItem('subjects', JSON.stringify(subjects));
+      subjects.forEach(sub => { attendance[sub] = { attended: 0, total: 0 }; });
+      localStorage.setItem('attendance', JSON.stringify(attendance));
+      showAttendanceSection();
+    }
+
+    function showAttendanceSection() {
+      subjectSection.style.display = 'none';
+      attendanceSection.style.display = 'block';
+      generateAttendanceButtons();
+      updateChart();
+      updateStats();
+    }
+
+    function generateAttendanceButtons() {
+      attendanceButtons.innerHTML = '';
+      subjects.forEach(subject => {
+        const div = document.createElement('div');
+        div.classList.add('attendance-item');
+        div.innerHTML = `  
+          <span>${subject}: <span id="${subject}-percent">(${calculatePercentage(subject)}%)</span></span>
+          <div>
+            <button onclick="markAttendance('${subject}')">Present</button>
+            <button onclick="missedClass('${subject}')">Absent</button>
+          </div>
+        `;
+        attendanceButtons.appendChild(div);
+      });
+    }
+
+    function markAttendance(subject) {
+      attendance[subject].attended++;
+      attendance[subject].total++;
+      saveAndUpdate(subject);
+    }
+
+    function missedClass(subject) {
+      attendance[subject].total++;
+      saveAndUpdate(subject);
+    }
+
+    function calculatePercentage(subject) {
+      const { attended, total } = attendance[subject];
+      return total ? ((attended / total) * 100).toFixed(2) : '0.00';
+    }
+
+    function saveAndUpdate(subject) {
+      localStorage.setItem('attendance', JSON.stringify(attendance));
+      document.getElementById(`${subject}-percent`).innerText = `(${calculatePercentage(subject)}%)`;
+
+      const percentage = parseFloat(calculatePercentage(subject));
+      if (percentage < 75) {
+        alert(`⚠️ Alert: ${subject} attendance below 75%!`);
+        sendAttendanceAlert(subject, percentage);
+      }
+
+      updateChart();
+      updateStats();
+    }
+
+    function updateChart() {
+      const ctx = document.getElementById('attendanceChart').getContext('2d');
+      const data = {
+        labels: subjects,
+        datasets: [{ label: 'Attendance %', data: subjects.map(sub => calculatePercentage(sub)), backgroundColor: '#ff6f61' }]
+      };
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, { type: 'bar', data: data, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } } });
+    }
+
+    function sendAttendanceAlert(subject, percentage) {
+      const studentEmail = localStorage.getItem('studentEmail');
+      if (!studentEmail) return;
+
+      fetch('/api/attendance-alert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentEmail, subject, percentage })
+      })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Error sending attendance alert:', error));
+    }
+
+    function resetTracker() {
+      if (confirm('Are you sure you want to reset all data?')) {
+        localStorage.removeItem('subjects');
+        localStorage.removeItem('attendance');
+        location.reload();
+      }
+    }
+
+    function updateStats() {
+      document.getElementById('totalSubjects').textContent = subjects.length;
+      
+      let totalPercentage = 0;
+      subjects.forEach(subject => {
+        totalPercentage += parseFloat(calculatePercentage(subject));
+      });
+      const average = subjects.length ? (totalPercentage / subjects.length).toFixed(2) : 0;
+      document.getElementById('averageAttendance').textContent = `${average}%`;
+    }
+  </script>
+</body>
+</html>

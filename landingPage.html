@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduLife Companion</title>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <style>
+    /* Reset & Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Background Image + Overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('mainbg.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5); /* Shadow effect */
+      z-index: -1;
+    }
+
+    /* Common Header/Footer Color */
+    .header-footer {
+      background-color: #003366;
+    }
+
+    /* Top Navbar */
+    .topnav {
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .topnav .menu-icon {
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .topnav .nav-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .topnav .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: rgba(0, 64, 128, 0.95);
+      height: calc(100vh - 60px);
+      position: fixed;
+      top: 60px;
+      left: -250px;
+      transition: left 0.3s ease-in-out;
+      padding-top: 20px;
+      overflow-y: auto;
+      z-index: 999;
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar .title {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      padding: 15px;
+      color: #fff;
+      border-bottom: 2px solid #cce0ff;
+    }
+
+    .sidebar .logo {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .sidebar img {
+      width: 80px;
+      height: 80px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 15px 20px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .sidebar a:hover {
+      background-color: #0077cc;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 0;
+      transition: margin-left 0.3s ease-in-out;
+      padding: 40px 20px;
+      flex: 1;
+    }
+
+    .main-content.shift {
+      margin-left: 250px;
+    }
+
+    .welcome {
+      text-align: center;
+      margin-top: 100px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .welcome h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      color: #ffffff;
+      text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .welcome p {
+      font-size: 1.3rem;
+      max-width: 700px;
+      margin: 0 auto;
+      color: #eaeaea;
+      line-height: 1.6;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Footer */
+    footer {
+      background-color: #003366;
+      color: #ccc;
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 0.9rem;
+    }
+
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .sidebar {
+        left: -250px;
+        height: 100vh;
+        top: 60px;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .main-content.shift {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <div class="topnav header-footer">
+    <div class="menu-icon" onclick="toggleSidebar()">☰</div>
+    <div class="nav-links">
+      <a href="aboutUs.html"><i class="fas fa-home"></i>AboutUs</a>
+      <a href="contact.html"><i class="fas fa-envelope"></i> Contact Us</a>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="logo">
+      <img src="logo.png" alt="EduLife Logo" />
+    </div>
+    <div class="title">
+      <i class="fas fa-graduation-cap"></i> EduLife Companion
+    </div>
+    <a href="attendance1.html"><i class="fas fa-user-check"></i> Attendance</a>
+    <a href="pomodoro.html"><i class="fas fa-stopwatch"></i> Pomodoro</a>
+    <a href="chat.html"><i class="fas fa-comments"></i> AI Chats</a>
+    <a href="expenseTracker.html"><i class="fas fa-wallet"></i> Expense Tracker</a>
+    <a href="timeTable.html"><i class="fas fa-calendar-alt"></i> Timetable</a>
+    <a href="reminder.html"><i class="fas fa-bell"></i> Reminders</a>
+    <a href="upload.html"><i class="fas fa-upload"></i> Upload Documents</a>
+    <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="main-content">
+    <div class="welcome">
+      <h1>Welcome to EduLife Companion</h1>
+      <p>Your personalized assistant to manage study schedules, track progress, and stay organized throughout your academic journey. Let’s learn, track, and succeed—together!</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="header-footer">
+    <p>&copy; 2025 EduLife Companion. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('main-content');
+      sidebar.classList.toggle('open');
+      mainContent.classList.toggle('shift');
+    }
+  </script>
+
+</body>
+</html>

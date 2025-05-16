@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us - EduLife Companion</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f7fc;
+      color: #333;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px; /* 👈 reduced navbar width */
+      background: #002147;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .nav a {
+      margin: 0 5px; /* 👈 tighter spacing between nav items */
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      transition: color 0.3s ease-in-out;
+    }
+    .nav a:hover {
+      color: #fdd835;
+    }
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 80px;
+      background: linear-gradient(135deg, #002147, #004080);
+      color: white;
+    }
+    .hero-text {
+      max-width: 500px;
+    }
+    .hero h1 {
+      font-size: 3em;
+      font-weight: bold;
+    }
+    .hero p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    .hero img {
+      height: 450px;
+      width: auto;
+      animation: fadeInUp 1.5s ease-in-out;
+    }
+    .features {
+      padding: 50px;
+      background: #fff;
+      text-align: center;
+    }
+    .features h2 {
+      font-size: 2.2em;
+      margin-bottom: 20px;
+      color: #002147;
+    }
+    .features ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+      display: inline-block;
+    }
+    .features li {
+      font-size: 18px;
+      line-height: 1.8;
+      background: #e3f2fd;
+      color: #002147;
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin: 10px 0;
+      transition: transform 0.3s ease-in-out, background 0.3s, color 0.3s;
+      position: relative;
+      padding-left: 40px;
+      opacity: 1;
+      transform: translateY(0);
+      animation: fadeInList 1s ease-in-out forwards;
+    }
+    .features li:hover {
+      transform: scale(1.05);
+      background: #002147;
+      color: #fff;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img src="https://i.postimg.cc/7hjXRSPm/Whats-App-Image-2025-03-04-at-14-17-43-5f7088c6.jpg" alt="EduLife Companion Logo" width="130" />
+    <div class="nav">
+      <a href="#">Home</a>
+      <a href="#">About Us</a>
+      <a href="#">Dashboard</a>
+      <a href="#">Contact Us</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-text">
+      <h1>ABOUT US</h1>
+      <p>We present "Edulife Companion", a comprehensive website designed to empower students with the tools they need to stay organized and productive. By integrating features like Attendance Tracking, Study Schedule Alerts, Task notification, and Budget Tracking, this website ensures students can achieve their academic and personal objectives effortlessly.</p>
+    </div>
+    <img src="https://i.postimg.cc/rwyTzx1d/Gemini-Generated-Image-em4ejhem4ejhem4e-1.jpg" alt="About Us Illustration">
+  </div>
+
+  <div class="features">
+    <h2>Why Choose EduLife Companion?</h2>
+    <ul>
+      <li><strong>Streamline Academic Tracking:</strong> Simplify attendance monitoring and academic schedule management for students.</li>
+      <li><strong>Financial Discipline:</strong> Help students track their budgets and expenses for better financial management.</li>
+      <li><strong>Boost Task Organization:</strong> Provide task notifications to help students prioritize and manage their work effectively.</li>
+      <li><strong>Improve Time Management:</strong> Enable students to create study schedules and stay on track with academic tasks.</li>
+      <li><strong>Enhance User Experience:</strong> Offer a customizable, easy-to-use interface tailored to student needs.</li>
+    </ul>
+  </div>
+
+</body>
+</html>

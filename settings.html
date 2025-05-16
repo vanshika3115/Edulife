@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EduLife Companion - Settings</title>
+  <link rel="stylesheet" href="setting.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <h1>EduLife Companion <span>Settings</span></h1>
+  </header>
+  <main>
+    <!-- Profile Customization -->
+    <section class="card">
+      <h2><i class="fas fa-user-circle"></i> Profile Customization</h2>
+      <div class="profile-section">
+        <div class="avatar-container">
+          <img id="avatar" src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+          <div class="avatar-overlay">
+            <i class="fas fa-camera"></i>
+          </div>
+        </div>
+        <input type="file" id="avatarInput" accept="image/*">
+        <input type="text" id="displayName" placeholder="Display Name">
+        <textarea id="bio" placeholder="Tell us about yourself..."></textarea>
+      </div>
+    </section>
+
+    <!-- Study Preferences -->
+    <section class="card">
+      <h2><i class="fas fa-clock"></i> Study Preferences</h2>
+      <div class="preferences-grid">
+        <div class="preference-item">
+          <label>Preferred Study Time:
+            <select id="studyTime">
+              <option>Morning</option>
+              <option>Afternoon</option>
+              <option>Evening</option>
+            </select>
+          </label>
+        </div>
+        <div class="preference-item">
+          <label>Daily Goal (hours):
+            <input type="number" id="dailyGoal" min="1" max="12" value="4">
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Theme Customization -->
+    <section class="card">
+      <h2><i class="fas fa-palette"></i> Theme Customization</h2>
+      <div class="theme-options">
+        <div class="theme-color">
+          <label>Primary Color</label>
+          <input type="color" id="primaryColor" value="#003366">
+        </div>
+        <div class="theme-color">
+          <label>Accent Color</label>
+          <input type="color" id="accentColor" value="#00aeef">
+        </div>
+      </div>
+    </section>
+
+    <!-- Accessibility Options -->
+    <section class="card">
+      <h2><i class="fas fa-universal-access"></i> Accessibility</h2>
+      <div class="accessibility-options">
+        <div class="option-item">
+          <label>
+            Font Size:
+            <input type="range" id="fontSize" min="14" max="24" value="16">
+            <span id="fontSizeValue">16px</span>
+          </label>
+        </div>
+        <div class="option-item">
+          <label class="toggle-switch">
+            <input type="checkbox" id="contrastToggle">
+            <span class="toggle-slider"></span>
+            High Contrast Mode
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Achievement Showcase -->
+    <section class="card">
+      <h2><i class="fas fa-trophy"></i> Achievements</h2>
+      <div class="badges">
+        <div class="badge">
+          <i class="fas fa-medal"></i>
+          <span>Consistency</span>
+          <small>7 day streak</small>
+        </div>
+        <div class="badge">
+          <i class="fas fa-bullseye"></i>
+          <span>Goal Setter</span>
+          <small>5 goals completed</small>
+        </div>
+        <div class="badge">
+          <i class="fas fa-book-reader"></i>
+          <span>Bookworm</span>
+          <small>10 books read</small>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <button id="saveBtn"><i class="fas fa-save"></i> Save Settings</button>
+  </footer>
+  <script src="setting.js"></script>
+</body>
+</html>

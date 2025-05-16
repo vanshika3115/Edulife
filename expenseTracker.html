@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker | EduLife Companion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #003366;
+      --primary-light: #004080;
+      --primary-dark: #00264d;
+      --accent: #ff6f61;
+      --background: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--background) 0%, #e6f0ff 100%);
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding: 40px 20px;
+      color: var(--text);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 51, 102, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 51, 102, 0.05) 0%, transparent 50%);
+      z-index: -1;
+    }
+
+    .tracker-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 10px 30px rgba(0, 51, 102, 0.1);
+      max-width: 1000px;
+      width: 100%;
+      justify-content: space-between;
+      position: relative;
+      border: 1px solid rgba(0, 51, 102, 0.1);
+    }
+
+    .tracker-container .reset-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: var(--accent);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+
+    .tracker-container .reset-btn:hover { 
+      background: #ff4d4d;
+      transform: translateY(-2px);
+    }
+
+    .expense-section {
+      flex: 1;
+      min-width: 320px;
+    }
+
+    .expense-section h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .income-section, .limit-section {
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+
+    .income-section input,
+    .limit-section input {
+      width: 150px;
+      margin: 0.5rem;
+      padding: 0.75rem;
+      border-radius: var(--border-radius);
+      border: 2px solid #e2e8f0;
+      outline: none;
+      font-size: 1rem;
+      background: var(--background);
+      color: var(--text);
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .income-section input:focus,
+    .limit-section input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+    }
+
+    .income-section button,
+    .limit-section button,
+    .expense-section form button {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--border-radius);
+      border: none;
+      background-color: var(--primary);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      margin: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+
+    .income-section button:hover,
+    .limit-section button:hover,
+    .expense-section form button:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .expense-section form {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .expense-section form input {
+      padding: 0.75rem;
+      border-radius: var(--border-radius);
+      border: 2px solid #e2e8f0;
+      outline: none;
+      font-size: 1rem;
+      background: var(--background);
+      color: var(--text);
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .expense-section form input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.1);
+    }
+
+    .expense-list {
+      list-style: none;
+      margin-top: 1.5rem;
+    }
+
+    .expense-list li {
+      background: var(--background);
+      margin: 0.5rem 0;
+      padding: 1rem;
+      border-radius: var(--border-radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(0, 51, 102, 0.1);
+      transition: var(--transition);
+    }
+
+    .expense-list li:hover {
+      transform: translateX(5px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .expense-list button {
+      background: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      border: none;
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .expense-list button:hover {
+      background: #ff4d4d;
+      transform: translateY(-2px);
+    }
+
+    .summary {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--background);
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(0, 51, 102, 0.1);
+    }
+
+    .chart-section {
+      flex: 0.8;
+      min-width: 280px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--background);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      border: 1px solid rgba(0, 51, 102, 0.1);
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 768px) {
+      .tracker-container {
+        padding: 1.5rem;
+      }
+
+      .expense-section form {
+        flex-direction: column;
+      }
+
+      .expense-section form input,
+      .expense-section form button {
+        width: 100%;
+      }
+
+      .expense-list li {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .expense-list button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="tracker-container">
+  <button class="reset-btn" onclick="resetTracker()">
+    <i class="fas fa-redo-alt"></i>
+    Reset All
+  </button>
+  <div class="expense-section">
+    <h2><i class="fas fa-wallet"></i> Expense Tracker</h2>
+    <div class="income-section">
+      <label for="income">Total Income (₹): </label>
+      <input type="number" id="income" placeholder="Enter income" />
+      <button onclick="setIncome()">
+        <i class="fas fa-check"></i>
+        Set Income
+      </button>
+    </div>
+    <div class="limit-section">
+      <label for="limit">Monthly Limit (₹): </label>
+      <input type="number" id="limit" placeholder="Set limit" />
+      <button onclick="setLimit()">
+        <i class="fas fa-check"></i>
+        Set Limit
+      </button>
+    </div>
+    <form id="expense-form">
+      <input type="text" id="desc" placeholder="Description" required />
+      <input type="number" id="amount" placeholder="Amount ₹" required />
+      <button type="submit">
+        <i class="fas fa-plus-circle"></i>
+        Add
+      </button>
+    </form>
+    <ul class="expense-list" id="expense-list"></ul>
+    <div class="summary" id="summary"></div>
+  </div>
+  <div class="chart-section">
+    <canvas id="expenseChart"></canvas>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('expense-form');
+  const list = document.getElementById('expense-list');
+  const summary = document.getElementById('summary');
+  const incomeInput = document.getElementById('income');
+  const limitInput = document.getElementById('limit');
+  const chartCanvas = document.getElementById('expenseChart');
+  let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+  let income = parseFloat(localStorage.getItem('income')) || 0;
+  let limit = parseFloat(localStorage.getItem('limit')) || null;
+  if(income) incomeInput.value = income;
+  if(limit) limitInput.value = limit;
+  let chart;
+
+  function setIncome() {
+    income = parseFloat(incomeInput.value);
+    localStorage.setItem('income', income);
+    renderExpenses();
+    alert(`💡 Total Income set to ₹${income}`);
+  }
+
+  function setLimit() {
+    limit = parseFloat(limitInput.value);
+    localStorage.setItem('limit', limit);
+    renderExpenses();
+    alert(`✅ Monthly limit set to ₹${limit}`);
+  }
+
+  function checkLimit(total) {
+    if (limit && total > limit) {
+      alert(`⚠️ Limit Exceeded! Limit: ₹${limit}, Spent: ₹${total}`);
+      sendEmailNotification(total);
+    }
+  }
+
+  function sendEmailNotification(total) {
+    const userEmail = localStorage.getItem('studentEmail');
+    fetch('http://localhost:5000/api/notify-exceed-limit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userEmail,
+        message: `Your monthly expense limit of ₹${limit} has been exceeded! You've spent ₹${total}.`
+      })
+    })
+    .then(response => response.json())
+    .then(data => console.log('Email sent successfully:', data))
+    .catch(error => console.error('Error sending email:', error));
+  }
+
+  function renderExpenses() {
+    list.innerHTML = '';
+    let total = 0;
+    expenses.forEach((exp, index) => {
+      total += exp.amount;
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${exp.desc} - ₹${exp.amount.toFixed(2)}</span>
+                      <button onclick="deleteExpense(${index})">Delete</button>`;
+      list.appendChild(li);
+    });
+    const balance = income - total;
+    summary.innerHTML = `Total Expenses: ₹${total.toFixed(2)}<br>Balance: ₹${balance.toFixed(2)}`;
+    checkLimit(total);
+    updateGraph();
+  }
+
+  function deleteExpense(index) {
+    expenses.splice(index, 1);
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+    renderExpenses();
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const desc = document.getElementById('desc').value.trim();
+    const amount = parseFloat(document.getElementById('amount').value);
+    if (desc && amount > 0) {
+      expenses.push({ desc, amount });
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+      form.reset();
+      renderExpenses();
+    }
+  });
+
+  function updateGraph() {
+    const labels = expenses.map(e => e.desc);
+    const data = expenses.map(e => e.amount);
+    if (chart) chart.destroy();
+    chart = new Chart(chartCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Expenses',
+          data: data,
+          backgroundColor: ['#0077cc', '#00b894', '#fdcb6e', '#d63031', '#6c5ce7'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: 'white', padding: 15 }
+          }
+        }
+      }
+    });
+  }
+
+  function resetTracker() {
+    if (confirm('Are you sure you want to reset all data?')) {
+      localStorage.removeItem('expenses');
+      localStorage.removeItem('income');
+      localStorage.removeItem('limit');
+      location.reload();
+    }
+  }
+
+  renderExpenses();
+</script>
+</body>
+</html>
